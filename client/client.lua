@@ -18,16 +18,16 @@ local function teleportPlayerToRegister(register)
     local registerCoords = GetEntityCoords(register)
     local registerHeading = GetEntityHeading(register)
     
-    -- Oblicz offset - 0.8m przed kasą w kierunku jej rotacji
+    -- player offset
     local offsetDistance = 0.85
     local radians = math.rad(registerHeading)
     
-    -- Oblicz pozycję gracza naprzeciwko kasy
+    -- player position in front of the register
     local playerX = registerCoords.x + (math.sin(radians) * offsetDistance)
     local playerY = registerCoords.y - (math.cos(radians) * offsetDistance)
     local playerZ = registerCoords.z - 1.0
     
-    -- Teleportuj gracza i ustaw rotację twarzą do kasy
+    -- tp player and change his heading
     SetEntityCoords(ped, playerX, playerY, playerZ, false, false, false, false)
     SetEntityHeading(ped, registerHeading)
 end
@@ -40,7 +40,6 @@ local function spawnMoneyPropsAsync(register, callback)
         local registerHeading2 = GetEntityHeading(register)
         local registerRot2 = GetEntityRotation(register)
         
-        -- Model pieniędzy
         local moneyModel = `p_cs_dollarbillstack01x`
         
         RequestModel(moneyModel)
@@ -48,41 +47,34 @@ local function spawnMoneyPropsAsync(register, callback)
             Wait(10)
         end
         
-        -- Oblicz pozycję pieniędzy w szufladzie
+        -- position of money in the drawer
         local offsetDistance2 = 0.45
         local offsetHeight2 = 0.07
         local radians2 = math.rad(registerHeading2)
-        
-        -- Środkowa pozycja
+
         local centerX = registerCoords2.x + (math.sin(radians2) * offsetDistance2)
         local centerY = registerCoords2.y - (math.cos(radians2) * offsetDistance2)
         local centerZ = registerCoords2.z + offsetHeight2
+ 
+        local sideOffset = 0.07
+        local sideRadians = math.rad(registerHeading2 + 90)
         
-        -- Oblicz offset na boki (lewo/prawo względem rotacji kasy)
-        local sideOffset = 0.07 -- Odległość między propami
-        local sideRadians = math.rad(registerHeading2 + 90) -- Kierunek prostopadły
-        
-        -- Pozycja pierwszego propa (lewo)
         local money1X = centerX + (math.sin(sideRadians) * sideOffset)
         local money1Y = centerY - (math.cos(sideRadians) * sideOffset)
         
-        -- Pozycja drugiego propa (prawo)
         local money2X = centerX - (math.sin(sideRadians) * sideOffset)
         local money2Y = centerY + (math.cos(sideRadians) * sideOffset)
         
-        -- Stwórz pierwszy prop pieniędzy
         local moneyProp1 = CreateObject(moneyModel, money1X, money1Y, centerZ, false, false, false)
         SetEntityRotation(moneyProp1, registerRot2.x, registerRot2.y, registerHeading2, 2, true)
         FreezeEntityPosition(moneyProp1, true)
         
-        -- Stwórz drugi prop pieniędzy
         local moneyProp2 = CreateObject(moneyModel, money2X, money2Y, centerZ, false, false, false)
         SetEntityRotation(moneyProp2, registerRot2.x, registerRot2.y, registerHeading2, 2, true)
         FreezeEntityPosition(moneyProp2, true)
         
         SetModelAsNoLongerNeeded(moneyModel)
         
-        -- Wywołaj callback z propami
         if callback then
             callback({moneyProp1, moneyProp2})
         end
@@ -122,7 +114,7 @@ exports.ox_target:addModel({
     {
         name = 'rob_register',
         icon = 'fas fa-money-bill',
-        label = 'Obrabuj kasę',
+        label = lib.locale('ox_target_label'),
         onSelect = function(data)
             local entity = data.entity
             
@@ -149,7 +141,6 @@ exports.ox_target:addModel({
                     local moneyProps = nil
 
                     if register ~= 0 then
-                        -- Teleportuj gracza przed kasą
                         teleportPlayerToRegister(register)
                         
                         RequestAnimDict("mech_pickup@loot@cash_register@open")
@@ -161,7 +152,6 @@ exports.ox_target:addModel({
                             Wait(10)
                         end
                         
-                        -- Spawn pieniędzy asynchronicznie
                         spawnMoneyPropsAsync(register, function(props)
                             moneyProps = props
                         end)
@@ -171,7 +161,7 @@ exports.ox_target:addModel({
 
                     if lib.progressBar({
                         duration = 5000,
-                        label = 'Okradanie kasy fiskalnej...',
+                        label = lib.locale('progress_bar_label'),
                         useWhileDead = false,
                         canCancel = true,
                         disable = {
@@ -186,7 +176,6 @@ exports.ox_target:addModel({
                         addRobbedRegister(entity)
                     end
 
-                    -- Usuń propy pieniędzy
                     if moneyProps ~= nil then
                         for _, prop in ipairs(moneyProps) do
                             if DoesEntityExist(prop) then

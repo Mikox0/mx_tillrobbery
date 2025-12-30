@@ -12,13 +12,13 @@ RegisterNetEvent('register:robbery', function(register)
     if Player.Functions.AddMoney('bloodmoney', bloodReward, 'store-robbery') then
         if Config.Notify == "OX" then
             TriggerClientEvent('ox_lib:notify', source, {
-                title = 'Sukces',
-                description = 'Ukradłeś $' .. bloodReward .. ' brudnej gotówki!',
+                title = lib.locale('reward_notfiy_label'),
+                description = lib.locale('reward_notify_desc1_ox') .. bloodReward .. lib.locale('reward_notify_desc2_ox'),
                 type = 'success'
             })
         elseif Config.Notify == "BLN" then
             TriggerClientEvent("bln_notify:send", source, {
-                title = "Ukradłeś $" .. bloodReward .. " ~red~brudnej gotówki~e~!"
+                title = lib.locale('reward_notify_desc1_bln') .. bloodReward .. lib.locale('reward_notify_desc2_bln')
             }, "TIP_CASH")
         end
     end

@@ -4,7 +4,9 @@ rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aw
 
 author 'mikox'
 description 'Register Robbery Script'
-version '1.0.0'
+version '0.1.0'
+
+ox_lib 'locale'
 
 shared_scripts {
     '@ox_lib/init.lua',
@@ -17,6 +19,10 @@ client_scripts {
 
 server_scripts {
     'server/server.lua'
+}
+
+files {
+    'locales/*.json',
 }
 
 dependencies {

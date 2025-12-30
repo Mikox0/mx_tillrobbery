@@ -1,0 +1,9 @@
+{
+    "ox_target_label": "Rob the register",
+    "progress_bar_label": "Robbing the register...",
+    "reward_notfiy_label": "Success",
+    "reward_notify_desc1_ox": "You stole $",
+    "reward_notify_desc2_ox": " blood money!",
+    "reward_notify_desc1_bln": "You stole $",
+    "reward_notify_desc2_bln": "  ~red~blood money~e~!"
+}
